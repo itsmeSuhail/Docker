@@ -1,0 +1,17 @@
+{
+  "name": "docker",
+  "version": "1.0.0",
+  "description": "now we are going to talk about volume and networking in the folder dc2 docker is used to run dbs/redis and other services locally this is so useful hence we will demonstrate is.",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "scripts": {
+    "start": "node index1.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

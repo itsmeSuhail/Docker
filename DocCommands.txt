@@ -1,0 +1,127 @@
+#to create docker images
+  1.select environment like nodejs python ect
+     from node:16-alpine
+  2.make workdir 
+     workdir /appp
+  3.copy the stuff
+    copy source destination
+    copy . .
+  4.download all packages
+    run npm i
+  5.excute the application
+    cmd ["npm","start"]
+#build docker image
+   1.docker image build -t <imageName> <dockerfile destination>
+       .docker image build -t mynode .
+#check docker current running images
+  .docker images
+  .dokcer image ls
+#create container to run image inside container
+      .docker container run <imageName>
+      .docker container start <image id>
+   2.docker container run --name <container name>  <imagename>
+      .docker container run --name c1 6687eccaecd5
+#stop docker container 
+  1.docker container stop <imageid or imagename>
+     .docker container stop  6687eccaecd5
+#check all container list
+   .docker container ls -a
+   .docker container ls
+#use image folder
+  1.docker exec -it <image id> sh
+     .docker exec -it 6687eccaecd5 sh
+#run container in background and specify a name to container
+ 1.docker container run -d --name<container name> <imagename>
+  .docker container run -d --name c mynode
+  .docker container run -d --name c1 mynode
+#see log on container
+ 1.docker logs <container name>
+   .docker logs c1
+#stop container
+  1.docker container stop <containerName>
+   .docker container stop c2
+#start existing container
+ .docker container start <container name>
+  .docker container start c2
+
+#run container on port
+  .docker container run -d -p 3001:3001 --name c1 first
+  
+ #delete docker image
+ docker image rm <image name>
+ docker image rm dc1-1
+ 
+ #add volume for your db
+ docker volume create <fol name>
+  docker volume create volume_database
+ docker run -v <volume fol name> -p 3000:3000 myapp
+  docker run -v volume_database:/data/db -p 3000:3000 myapp
+ #remove volume
+ docker volume rm <fol name>
+  docker volume rm volume_database
+  
+  #docker add network
+  docker network create <network name>
+   docker network create <net1> 
+  #how to interact frontend with backend using network
+  docker run -p 3003:3000 --network <network name> --name<server name> <image name>
+   docker run -p 3002:3000 --network net1 --name client frontend
+  docker run -p 3002:3001 --network <network name> --name<server name> <image name>
+   docker run -p 3003:3001 --network net1 --name server backend
+   
+   #important
+   both frontend and backend connected with same network like net1
+   both frontend and backend should have given name like client and server
+   now if frontend want to make request then 
+   http://server:3000/api/v1
+   now if backend want to make request then
+   http://client:3001/form/data
+   
+   #stop servers and remove
+   docker stop <server name>
+    docker stop client
+   docker rm <server name>
+    docker rm client
+    
+    #env variables
+    there are 3 ways
+    1.Add env in Dockerfile
+     FROM node:14
+     # Set environment variable
+     ENV NODE_ENV=production
+ 
+     # Other instructions...
+    2.while running docker
+       docker run -e NODE_ENV=production -p 8080:3000 my-node-app
+    3. creating file
+      file name=.env
+         NODE_ENV=production
+         DB_HOST=localhost
+      docker run --env-file .env -p 8080:3000 my-node-app
+
+      #multi stage build
+      
+        FROM node:16-alpine AS base
+        WORKDIR /app
+        COPY package* .
+        RUN npm install
+        EXPOSE 3000
+
+        FROM base AS development
+        COPY .. 
+        CMD ["npm","run","dev"]
+
+        FROM base AS production
+        COPY . .
+        RUN npm prune --production
+        CMD ["npm","run","start"]
+      
+      to build dev folder
+      docker build .  --target development -t multistage
+      
+      #how to interact with build container with nodemon
+      docker run -p 3001:3000  -v <current files path>:<docker image path> myapp:dev
+      docker run -p 3001:3000  -v .:/app myapp:dev
+      
+      #docker compose 
+      isme ham sare image ek saath combine kr sakte hai tak again and again kaam na krna pade
